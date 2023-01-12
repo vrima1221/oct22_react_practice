@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 import { Product } from './types/Product';
 import { User } from './types/User';
 import { Category } from './types/Category';
@@ -7,9 +8,9 @@ import { Category } from './types/Category';
 import usersFromServer from './api/users';
 import productsFromServer from './api/products';
 import categoriesFromServer from './api/categories';
-import classNames from 'classnames';
 
 export const App: React.FC = () => {
+  const [query, setQuery] = useState('');
   // const [users, setUsers] = useState(usersFromServer);
   // const [products, setProducts] = useState(productsFromServer);
   // const [categories, setCategories] = useState(categoriesFromServer);
@@ -24,6 +25,17 @@ export const App: React.FC = () => {
 
     return usersFromServer.find(user => user.id === recentCategory?.ownerId)
       || null;
+  };
+
+  const visibleProducts = productsFromServer.filter(product => {
+    const normalizedProductName = product.name.toLowerCase();
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return normalizedProductName.includes(normalizedQuery);
+  });
+
+  const handleClearSearch = () => {
+    setQuery('');
   };
 
   return (
@@ -59,7 +71,10 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={(event) => {
+                    setQuery(event.target.value);
+                  }}
                 />
 
                 <span className="icon is-left">
@@ -72,6 +87,7 @@ export const App: React.FC = () => {
                     data-cy="ClearButton"
                     type="button"
                     className="delete"
+                    onClick={handleClearSearch}
                   />
                 </span>
               </p>
@@ -172,7 +188,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {productsFromServer.map(product => (
+              {visibleProducts.map(product => (
                 <tr data-cy="Product">
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {product.id}
