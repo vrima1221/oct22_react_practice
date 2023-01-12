@@ -37,7 +37,7 @@ export const App: React.FC = () => {
   });
 
   const handleClearSearch = () => {
-    setQuery('');
+    setQuery(defaultQueryValue);
   };
 
   const handleSelectUser = (user: User) => {
@@ -52,12 +52,12 @@ export const App: React.FC = () => {
   };
 
   const handleAllclick = () => {
-    setSelectedUserId(0);
+    setSelectedUserId(defaultSelectedUserId);
     setProducts(productsFromServer);
   };
 
   const handleResetClick = () => {
-    setSelectedUserId(0);
+    setSelectedUserId(defaultSelectedUserId);
     setProducts(productsFromServer);
   };
 
