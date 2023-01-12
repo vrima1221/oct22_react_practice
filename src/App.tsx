@@ -46,7 +46,7 @@ export const App: React.FC = () => {
     }
 
     setSelectedUserId(user.id);
-    setProducts(products.filter(product => {
+    setProducts(productsFromServer.filter(product => {
       return getProductCategory(product)?.ownerId === user.id;
     }));
   };
@@ -141,7 +141,7 @@ export const App: React.FC = () => {
               {categoriesFromServer.map(category => (
                 <a
                   data-cy="Category"
-                  className="button mr-2 my-1 is-info"
+                  className="button mr-2 my-1"
                   href="#/"
                 >
                   {category.title}
