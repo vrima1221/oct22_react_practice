@@ -10,10 +10,12 @@ import productsFromServer from './api/products';
 import categoriesFromServer from './api/categories';
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState('');
-  // const [users, setUsers] = useState(usersFromServer);
-  // const [products, setProducts] = useState(productsFromServer);
-  // const [categories, setCategories] = useState(categoriesFromServer);
+  const defaultSelectedUserId = 0;
+  const defaultQueryValue = '';
+
+  const [query, setQuery] = useState(defaultQueryValue);
+  const [selectedUserId, setSelectedUserId] = useState(defaultSelectedUserId);
+  const [products, setProducts] = useState(productsFromServer);
 
   const getProductCategory = (product: Product): Category | null => {
     return categoriesFromServer
@@ -27,7 +29,7 @@ export const App: React.FC = () => {
       || null;
   };
 
-  const visibleProducts = productsFromServer.filter(product => {
+  const visibleProducts = products.filter(product => {
     const normalizedProductName = product.name.toLowerCase();
     const normalizedQuery = query.trim().toLowerCase();
 
@@ -36,6 +38,27 @@ export const App: React.FC = () => {
 
   const handleClearSearch = () => {
     setQuery('');
+  };
+
+  const handleSelectUser = (user: User) => {
+    if (selectedUserId === user.id) {
+      return;
+    }
+
+    setSelectedUserId(user.id);
+    setProducts(products.filter(product => {
+      return getProductCategory(product)?.ownerId === user.id;
+    }));
+  };
+
+  const handleAllclick = () => {
+    setSelectedUserId(0);
+    setProducts(productsFromServer);
+  };
+
+  const handleResetClick = () => {
+    setSelectedUserId(0);
+    setProducts(productsFromServer);
   };
 
   return (
@@ -51,13 +74,26 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                onClick={handleAllclick}
+                className={classNames(
+                  {
+                    'is-active': selectedUserId === 0,
+                  },
+                )}
               >
                 All
               </a>
               {usersFromServer.map(user => (
                 <a
+                  className={classNames(
+                    {
+                      'is-active': selectedUserId === user.id,
+                    },
+                  )}
+                  key={user.id}
                   data-cy="FilterUser"
                   href="#/"
+                  onClick={() => handleSelectUser(user)}
                 >
                   {user.name}
                 </a>
@@ -118,7 +154,7 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
+                onClick={handleResetClick}
               >
                 Reset all filters
               </a>
